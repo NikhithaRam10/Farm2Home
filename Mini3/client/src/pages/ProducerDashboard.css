@@ -1,0 +1,57 @@
+.producer-dashboard {
+  text-align: center;
+  padding: 40px;
+  background: transparent; /* no white background */
+  min-height: 100vh;
+  position: relative;
+}
+
+.dashboard-header {
+  display: flex;
+  justify-content: space-between; /* space between heading and logout */
+  align-items: center;
+  margin-bottom: 40px;
+}
+
+.dashboard-header h1 {
+  flex-grow: 1;
+  text-align: center; /* keeps title in center */
+}
+
+.logout-btn {
+  position: absolute;
+  left: 2px;   /* pushes logout to left corner */
+  top: 50px;
+  padding: 10px 20px;
+  background-color: #f44336; /* red */
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.logout-btn:hover {
+  background-color: #d32f2f;
+}
+
+.dashboard-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+}
+
+.dashboard-buttons button {
+  padding: 12px 24px;
+  font-size: 16px;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.dashboard-buttons button:hover {
+  background-color: #45a049;
+}
