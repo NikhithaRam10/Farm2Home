@@ -28,12 +28,27 @@ const Cart = () => {
   // Buy product
   const handleBuy = async (product) => {
     let quantity = prompt(
-      `Enter quantity to buy (in Kg)\nAvailable: ${product.quantity} Kg\n(Minimum 0.25 Kg)`
+      `Enter quantity to buy (in Kg)
+Available: ${product.quantity} Kg
+(Minimum 0.25 Kg)`
     );
+
     if (!quantity) return;
+
     quantity = parseFloat(quantity);
-    if (isNaN(quantity) || quantity <= 0) {
+
+    if (isNaN(quantity)) {
       alert("Please enter a valid number.");
+      return;
+    }
+
+    if (quantity < 0.25) {
+      alert("Minimum purchase quantity is 0.25 Kg");
+      return;
+    }
+
+    if (quantity > product.quantity) {
+      alert(`Only ${product.quantity} Kg available`);
       return;
     }
 
@@ -43,8 +58,15 @@ const Cart = () => {
         { productId: product._id, quantity },
         { headers: { Authorization: `Bearer ${token}` } }
       );
-      alert(`✅ ${res.data.message}\nAmount Paid: ₹${res.data.totalAmount}`);
-      loadCart();
+
+      alert(
+        `✅ Purchase Successful!
+Product: ${product.name}
+Quantity: ${quantity} Kg
+Amount Paid: ₹${res.data.totalAmount}`
+      );
+
+      loadCart(); // refresh cart
     } catch (err) {
       alert(err.response?.data?.message || "Purchase failed");
       console.error(err);
@@ -66,8 +88,21 @@ const Cart = () => {
     }
   };
 
-  if (!cart.length)
-    return <h2 className="text-center mt-10">No items in your cart</h2>;
+  // ✅ Filter out deleted products safely
+  const validCartItems = cart.filter((item) => item.productId);
+
+  if (!validCartItems.length) {
+    return (
+      <div className="consumer-container p-6">
+        <button onClick={() => navigate(-1)} className="back-btn mb-4">
+          ← Back
+        </button>
+        <h2 className="text-center mt-10">
+          Your cart is empty or products are no longer available.
+        </h2>
+      </div>
+    );
+  }
 
   return (
     <div className="consumer-container p-6">
@@ -78,8 +113,9 @@ const Cart = () => {
       <h1 className="text-2xl font-bold mb-4">Your Cart</h1>
 
       <div className="products-grid">
-        {cart.map((item) => {
+        {validCartItems.map((item) => {
           const product = item.productId;
+
           return (
             <div key={product._id} className="product-card">
               <img
@@ -96,7 +132,10 @@ const Cart = () => {
               <p className="product-quantity">Qty: {item.quantity}</p>
 
               <div className="product-buttons">
-                <button className="buy-btn" onClick={() => handleBuy(product)}>
+                <button
+                  className="buy-btn"
+                  onClick={() => handleBuy(product)}
+                >
                   Buy
                 </button>
                 <button

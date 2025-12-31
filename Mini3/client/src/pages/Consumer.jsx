@@ -94,20 +94,83 @@ const Consumer = () => {
   const filteredProducts = products.filter((product) =>
     product.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
+// Buy product (same logic as Cart)
+const handleBuy = async (product) => {
+  if (!token) {
+    alert("Please login to buy products");
+    return;
+  }
+
+  let quantity = prompt(
+    `Enter quantity to buy (in Kg)
+Available: ${product.quantity} Kg
+(Minimum 0.25 Kg)`
+  );
+
+  if (!quantity) return;
+
+  quantity = parseFloat(quantity);
+
+  // Validation
+  if (isNaN(quantity)) {
+    alert("Please enter a valid number.");
+    return;
+  }
+
+  if (quantity < 0.25) {
+    alert("Minimum purchase quantity is 0.25 Kg");
+    return;
+  }
+
+  if (quantity > product.quantity) {
+    alert(`Only ${product.quantity} Kg available`);
+    return;
+  }
+
+  try {
+    const res = await axios.post(
+      "http://localhost:5000/api/users/buy",
+      { productId: product._id, quantity },
+      { headers: { Authorization: `Bearer ${token}` } }
+    );
+
+    alert(
+      `✅ Purchase Successful!
+Product: ${product.name}
+Quantity: ${quantity} Kg
+Amount Paid: ₹${res.data.totalAmount}`
+    );
+
+    // Reload products to reflect updated stock
+    const updatedProducts = await axios.get("http://localhost:5000/api/products");
+    setProducts(updatedProducts.data);
+
+    loadCounts(); // refresh cart/fav count
+
+  } catch (err) {
+    alert(err.response?.data?.message || "Purchase failed");
+    console.error(err);
+  }
+};
+
 
   return (
     <div>
       {/* TOP NAVBAR */}
       <div className="top-navbar">
         <div className="nav-item" onClick={() => navigate("/favorites")}>
-          ❤️ Favourites ({favouritesCount})
+          ❤️ Favourites
         </div>
         <div className="nav-item" onClick={() => navigate("/cart")}>
-          🛒 Cart ({cartCount})
+          🛒 Cart 
         </div>
         <div className="nav-item" onClick={() => navigate("/profile")}>
           👤 Profile
         </div>
+        <div className="nav-item" onClick={() => navigate("/my-orders")}>
+  📦 Orders
+</div>
+
 
         <input
           type="text"
@@ -116,10 +179,9 @@ const Consumer = () => {
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
         />
-
-        <button className="logout-btn" onClick={handleLogout}>
+         <div className="logout-btn" onClick={handleLogout}>
           Logout
-        </button>
+        </div>
       </div>
 
       {/* PRODUCTS GRID */}
@@ -150,7 +212,12 @@ const Consumer = () => {
                     >
                       🛒 Add to Cart
                     </button>
-                    <button className="buy-btn">Buy</button>
+                    <button
+                          className="buy-btn"
+                          disabled={product.quantity === 0}
+                          onClick={() => handleBuy(product)}>
+                          {product.quantity === 0 ? "Out of Stock" : "Buy"}
+                      </button>
                   </div>
                 </div>
               );

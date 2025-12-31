@@ -1,16 +1,16 @@
-import React, { useState } from 'react';
-import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
-
+import React, { useState } from "react";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
+import "./Consumer.css";
 export default function AddProduct() {
   const [form, setForm] = useState({
-    name: '',
-    description: '',
-    pricePerKg: '',
-    quantity: ''
+    name: "",
+    description: "",
+    pricePerKg: "",
+    quantity: "",
   });
   const [images, setImages] = useState([]);
-  const [message, setMessage] = useState('');
+  const [message, setMessage] = useState("");
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -24,25 +24,42 @@ export default function AddProduct() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    const token = localStorage.getItem("token"); // ✅ GET TOKEN
+    if (!token) {
+      alert("Please login again");
+      return;
+    }
+
     const formData = new FormData();
-    Object.entries(form).forEach(([key, value]) => {
-      formData.append(key, value);
-    });
+    formData.append("name", form.name);
+    formData.append("description", form.description);
+    formData.append("pricePerKg", form.pricePerKg);
+    formData.append("quantity", form.quantity);
+
     images.forEach((img) => {
-      formData.append('images', img);
+      formData.append("images", img);
     });
 
     try {
-      await axios.post('http://localhost:5000/api/products/add-product', formData, {
-        headers: { 'Content-Type': 'multipart/form-data' },
-      });
-      setMessage('✅ Product added successfully!');
-      setForm({ name: '', description: '', pricePerKg: '', quantity: '' });
+      await axios.post(
+        "http://localhost:5000/api/products/add-product",
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+            Authorization: `Bearer ${token}`, // ✅ VERY IMPORTANT
+          },
+        }
+      );
+
+      setMessage("✅ Product added successfully!");
+      setForm({ name: "", description: "", pricePerKg: "", quantity: "" });
       setImages([]);
-      setTimeout(() => navigate('/ProducerDashboard'), 1500);
+
+      setTimeout(() => navigate("/ProducerDashboard"), 1500);
     } catch (err) {
-      setMessage('❌ Failed to add product');
-      console.error('Upload error:', err);
+      console.error("Upload error:", err.response?.data || err.message);
+      setMessage("❌ Failed to add product");
     }
   };
 
@@ -100,10 +117,11 @@ export default function AddProduct() {
         .message {
           margin-top: 16px;
           text-align: center;
+          font-weight: bold;
         }
       `}</style>
 
-      <button className="back-btn" onClick={() => navigate('/ProducerDashboard')}>
+      <button className="back-btn" onClick={() => navigate("/ProducerDashboard")}>
         ⬅ Back
       </button>
 
@@ -119,6 +137,7 @@ export default function AddProduct() {
             onChange={handleChange}
             required
           />
+
           <input
             type="number"
             name="pricePerKg"
@@ -127,6 +146,7 @@ export default function AddProduct() {
             onChange={handleChange}
             required
           />
+
           <input
             type="number"
             name="quantity"
@@ -135,6 +155,7 @@ export default function AddProduct() {
             onChange={handleChange}
             required
           />
+
           <textarea
             name="description"
             placeholder="Description"
@@ -142,6 +163,7 @@ export default function AddProduct() {
             onChange={handleChange}
             required
           ></textarea>
+
           <input
             type="file"
             accept="image/*"

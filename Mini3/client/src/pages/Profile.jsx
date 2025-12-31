@@ -4,66 +4,62 @@ import { useNavigate } from "react-router-dom";
 import "./Consumer.css";
 
 const Profile = () => {
-  const [user, setUser] = useState(null);
-  const token = localStorage.getItem("token");
+  const [profile, setProfile] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (token) {
-      axios
-        .get("http://localhost:5000/api/users/profile", {
-          headers: { Authorization: `Bearer ${token}` },
-        })
-        .then((res) => setUser(res.data))
-        .catch((err) => console.error("Error fetching profile:", err));
-    }
-  }, [token]);
+    const fetchProfile = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        const res = await axios.get(
+          "http://localhost:5000/api/users/profile",
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
+        setProfile(res.data);
+      } catch (err) {
+        console.error("Profile fetch error:", err);
+      }
+    };
 
-  if (!user) return <p className="text-center mt-10">Loading profile...</p>;
+    fetchProfile();
+  }, []);
+
+  if (!profile) {
+    return <p className="text-center mt-10">Loading profile...</p>;
+  }
 
   return (
-    <div className="profile-container">
-      {/* 🔙 Back Button */}
-      <button
-        onClick={() => navigate(-1)}
-        className="back-btn absolute top-4 left-4 bg-green-700 text-white px-3 py-1 rounded-lg shadow hover:bg-green-800 transition"
-      >
-        ← Back
+    <div className="profile-wrapper">
+      {/* Back Button */}
+      <button className="back-btn" onClick={() => navigate(-1)}>
+        Back
       </button>
 
-      <div className="profile-card mx-auto mt-16 p-6 bg-white rounded-xl shadow-lg w-[90%] md:w-[50%]">
-        <h2 className="text-2xl font-bold mb-4 text-center text-green-700">
-          Profile Details
-        </h2>
+      {/* Profile Card */}
+      <div className="profile-card">
+        <div className="profile-avatar">
+          {profile.fullName.charAt(0).toUpperCase()}
+        </div>
 
-        <p className="text-lg">
-          <strong>Name:</strong> {user.fullName}
-        </p>
-        <p className="text-lg mt-2">
-          <strong>Email:</strong> {user.email}
-        </p>
-        <p className="text-lg mt-2">
-          <strong>Role:</strong>{" "}
-          <span className="capitalize">{user.role}</span>
-        </p>
+        <h2 className="profile-name">{profile.fullName}</h2>
 
-        {/* 👇 Total Earnings (only for producers) */}
-        {user.role === "producer" && (
-          <p className="text-lg mt-2 text-green-800 font-semibold">
-            <strong>Total Earnings:</strong> ₹{user.earnings || 0}
-          </p>
-        )}
+        <p className="profile-email">📧 {profile.email}</p>
 
-        {/* Consumer or producer info */}
-        {user.role === "consumer" ? (
-          <p className="mt-4 text-gray-600 italic">
-            You can explore and purchase farm products directly from producers.
-          </p>
-        ) : (
-          <p className="mt-4 text-gray-600 italic">
-            You can upload products and track your total earnings here.
-          </p>
-        )}
+        <span
+          className={`role-badge ${
+            profile.role === "producer" ? "producer" : "consumer"
+          }`}
+        >
+          {profile.role.toUpperCase()}
+        </span>
+
+        <p className="profile-desc">
+          {profile.role === "consumer"
+            ? "You can explore and purchase fresh farm products directly from producers."
+            : "You can add products, track orders, and manage your farm sales."}
+        </p>
       </div>
     </div>
   );

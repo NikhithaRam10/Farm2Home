@@ -1,6 +1,8 @@
 const express = require("express");
 const router = express.Router();
+
 const { protect } = require("../middlewares/authMiddleware");
+
 const {
   addToCart,
   getCart,
@@ -8,8 +10,14 @@ const {
   addToFavorites,
   removeFromFavorites,
   getFavorites,
-  getProfile
+  getProfile,
+  buyProduct,
+  getProducerOrders,
+  getMyOrders, // ✅ ADD THIS
 } = require("../controllers/userController");
+
+
+
 const Product = require("../models/Product");
 const User = require("../models/User");
 
@@ -17,6 +25,12 @@ const User = require("../models/User");
 router.post("/cart/add", protect, addToCart);
 router.get("/cart", protect, getCart);
 router.post("/cart/remove", protect, removeFromCart);
+router.post("/buy", protect, buyProduct);
+router.get("/orders", protect, getMyOrders);
+// 👨‍🌾 Producer sales / orders
+router.get("/producer-orders", protect, getProducerOrders);
+
+
 
 // ❤️ FAVORITES ROUTES
 router.post("/favorites/add", protect, addToFavorites);

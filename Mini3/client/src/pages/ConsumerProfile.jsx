@@ -8,9 +8,13 @@ const ConsumerProfile = () => {
     const fetchProfile = async () => {
       try {
         const token = localStorage.getItem("token"); // assuming you save JWT
-        const { data } = await axios.get("http://localhost:5000/api/user/profile", {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        const { data } = await axios.get(
+  "http://localhost:5000/api/users/profile",
+  {
+    headers: { Authorization: `Bearer ${token}` },
+  }
+);
+
         setProfile(data);
       } catch (error) {
         console.error("Error fetching profile:", error);

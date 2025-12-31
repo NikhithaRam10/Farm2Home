@@ -61,10 +61,10 @@ const Favorites = () => {
 
   return (
     <div className="consumer-container p-6">
-      <button onClick={() => navigate(-1)}
-        className="fixed top-5 left-5 bg-green-600 text-white font-semibold px-4 py-2 rounded-lg shadow-lg hover:bg-green-700 active:bg-green-800 transition duration-200 z-50">
-        ← Back
-      </button>
+      <button onClick={() => navigate(-1)} className="back-btn">
+  ← Back
+</button>
+
 
 
       <h1 className="text-2xl font-bold mb-4">My Favorites</h1>

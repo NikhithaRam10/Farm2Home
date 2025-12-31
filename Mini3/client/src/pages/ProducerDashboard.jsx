@@ -1,6 +1,6 @@
-import React from 'react';
-import { useNavigate } from 'react-router-dom';
-import './ProducerDashboard.css';
+import React from "react";
+import { useNavigate } from "react-router-dom";
+import "./ProducerDashboard.css";
 
 export default function ProducerDashboard() {
   const navigate = useNavigate();
@@ -14,13 +14,28 @@ export default function ProducerDashboard() {
     <div className="producer-dashboard">
       <div className="dashboard-header">
         <h1>Producer Dashboard</h1>
-        <button className="logout-btn" onClick={handleLogout}>Logout</button>
+        <button className="logout-btn" onClick={handleLogout}>
+          Logout
+        </button>
       </div>
 
       <div className="dashboard-buttons">
-        <button onClick={() => navigate('/add-product')}>Add Product</button>
-        <button onClick={() => navigate('/Profile')}>Profile</button>
-        <button onClick={() => navigate('/my-products')}>See Added Products</button>
+        <button onClick={() => navigate("/add-product")}>
+          ➕ Add Product
+        </button>
+
+        <button onClick={() => navigate("/my-products")}>
+          📦 See Added Products
+        </button>
+
+        {/* ✅ THIS IS THE MISSING BUTTON */}
+        <button onClick={() => navigate("/producer-orders")}>
+          💰 My Sales & Earnings
+        </button>
+
+        <button onClick={() => navigate("/Profile")}>
+          👤 Profile
+        </button>
       </div>
     </div>
   );

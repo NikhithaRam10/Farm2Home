@@ -7,6 +7,11 @@ const productSchema = new mongoose.Schema({
   description: { type: String, required: true },
   images: { type: [String], required: true },
   createdBy: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+
+  status: {
+    type: String,
+    default: "in_stock"
+  }
 });
 
 module.exports = mongoose.model("Product", productSchema);

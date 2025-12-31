@@ -1,4 +1,7 @@
 const User = require("../models/User");
+const Product = require("../models/Product");
+const Order = require("../models/Order");
+
 
 // ADD TO CART
 const addToCart = async (req, res) => {
@@ -133,6 +136,84 @@ const getProfile = async (req, res) => {
     res.status(500).json({ message: "Error fetching profile", error: err.message });
   }
 };
+// BUY PRODUCT
+const buyProduct = async (req, res) => {
+  try {
+    const { productId, quantity } = req.body;
+
+    const product = await Product.findById(productId);
+    if (!product) return res.status(404).json({ message: "Product not found" });
+
+    if (quantity < 0.25)
+      return res.status(400).json({ message: "Minimum order is 0.25 Kg" });
+
+    if (quantity > product.quantity)
+      return res.status(400).json({ message: "Insufficient stock" });
+
+    const producer = await User.findById(product.createdBy);
+    if (!producer)
+      return res.status(404).json({ message: "Producer not found" });
+
+    const totalAmount = quantity * product.pricePerKg;
+
+    // 1️⃣ Reduce stock
+    product.quantity -= quantity;
+    await product.save();
+
+    // 2️⃣ Add earnings to producer
+    producer.earnings += totalAmount;
+    await producer.save();
+
+    // 3️⃣ CREATE ORDER (THIS IS THE KEY)
+    const order = new Order({
+      consumer: req.user.id,
+      producer: producer._id,
+      product: product._id,
+      quantity,
+      totalAmount,
+    });
+    await order.save();
+
+    res.json({
+      message: "Purchase successful",
+      totalAmount,
+    });
+  } catch (err) {
+    console.error("Buy error:", err);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+// 🧾 Consumer order history
+const getMyOrders = async (req, res) => {
+  try {
+    const orders = await Order.find({ consumer: req.user.id })
+      .populate("product", "name images pricePerKg")
+      .populate("producer", "fullName email")
+      .sort({ createdAt: -1 });
+
+    res.json(orders);
+  } catch (err) {
+    console.error("Get orders error:", err);
+    res.status(500).json({ message: "Failed to fetch orders" });
+  }
+};
+
+// 🧾 Producer Sales / Orders
+const getProducerOrders = async (req, res) => {
+  try {
+    const orders = await Order.find({ producer: req.user.id })
+      .populate("product", "name pricePerKg")
+      .populate("consumer", "fullName email")
+      .sort({ createdAt: -1 });
+
+    res.json(orders);
+  } catch (err) {
+    console.error("Producer orders error:", err);
+    res.status(500).json({ message: "Failed to fetch sales" });
+  }
+};
+
 
 module.exports = {
   addToCart,
@@ -141,5 +222,9 @@ module.exports = {
   addToFavorites,
   removeFromFavorites,
   getFavorites,
-  getProfile
+  getProfile,
+  buyProduct,
+  getProducerOrders,
+  getMyOrders, // ✅ ADD THIS
 };
+

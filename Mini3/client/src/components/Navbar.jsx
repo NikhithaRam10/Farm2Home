@@ -27,6 +27,15 @@ export default function Navbar() {
    if(location.pathname ==="/Profile"){
     return null;
   }
+  if(location.pathname=="/my-products"){
+    return null;
+  }
+  if(location.pathname=="/my-orders"){
+    return null;
+  }
+   if(location.pathname=="/producer-orders"){
+    return null;
+  }
 
   return (
     <nav className="navbar">
