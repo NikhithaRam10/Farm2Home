@@ -1,12 +1,34 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import ConsumerNavbar from "../components/ConsumerNavbar";
 import "./Consumer.css";
 
 const ConsumerOrders = () => {
   const [orders, setOrders] = useState([]);
   const navigate = useNavigate();
   const token = localStorage.getItem("token");
+  const [searchTerm, setSearchTerm] = useState("");
+  const [favouritesCount, setFavouritesCount] = useState(0);
+  const [cartCount, setCartCount] = useState(0);
+
+  // Load counts
+  const loadCounts = async () => {
+    if (!token) return;
+    try {
+      const favRes = await axios.get("http://localhost:5000/api/users/favorites", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setFavouritesCount(favRes.data.length || 0);
+
+      const cartRes = await axios.get("http://localhost:5000/api/users/cart", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setCartCount(cartRes.data.length || 0);
+    } catch (err) {
+      console.error("Error loading counts:", err);
+    }
+  };
 
   useEffect(() => {
     const fetchOrders = async () => {
@@ -24,22 +46,32 @@ const ConsumerOrders = () => {
     };
 
     fetchOrders();
+    loadCounts();
   }, [token]);
 
+  // ✅ Filter orders by product name
+  const filteredOrders = orders.filter((order) =>
+    order.product?.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   return (
-    <div className="consumer-container p-6">
-      {/* ✅ Same Back Button as other pages */}
+        <>
+          <ConsumerNavbar 
+            searchTerm={searchTerm}
+            onSearchChange={setSearchTerm}
+            favouritesCount={favouritesCount}
+            cartCount={cartCount}
+          />
+    <div className="consumer-container">
       <button className="back-btn mb-4" onClick={() => navigate(-1)}>
         ← Back
       </button>
 
-      <h1 className="text-2xl font-bold mb-4">My Orders</h1>
-
-      {orders.length === 0 ? (
-        <p className="text-center mt-10">No orders yet.</p>
+      {filteredOrders.length === 0 ? (
+        <p className="text-center mt-10">No products found.</p>
       ) : (
         <div className="products-grid">
-          {orders.map((order) => {
+          {filteredOrders.map((order) => {
             const imageUrl = order.product?.images?.[0]
               ? `http://localhost:5000/uploads/${order.product.images[0]}`
               : "https://via.placeholder.com/200";
@@ -67,6 +99,7 @@ const ConsumerOrders = () => {
         </div>
       )}
     </div>
+    </>
   );
 };
 

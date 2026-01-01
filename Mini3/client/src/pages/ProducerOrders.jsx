@@ -21,7 +21,6 @@ const ProducerOrders = () => {
 
         setOrders(res.data);
 
-        // Calculate earnings
         const total = res.data.reduce(
           (sum, order) => sum + order.totalAmount,
           0
@@ -36,34 +35,47 @@ const ProducerOrders = () => {
   }, [token]);
 
   return (
-    <div className="consumer-container p-6">
+    <div className="consumer-container">
+      {/* 🔙 Back Button */}
       <button className="back-btn mb-4" onClick={() => navigate(-1)}>
         ← Back
       </button>
 
-      <h1 className="text-2xl font-bold mb-2">My Sales</h1>
-      <h2 className="text-xl font-semibold mb-4">
-        Total Earnings: ₹{earnings}
-      </h2>
-
       {orders.length === 0 ? (
-        <p>No sales yet.</p>
+        <p className="text-center mt-10">No sales yet.</p>
       ) : (
-        <div className="products-grid">
-          {orders.map((order) => (
-            <div key={order._id} className="product-card">
-              <h3 className="product-name">{order.product.name}</h3>
-              <p>Quantity Sold: {order.quantity} Kg</p>
-              <p>Amount Earned: ₹{order.totalAmount}</p>
-              <p className="text-sm text-gray-500">
-                Buyer: {order.consumer.fullName}
-              </p>
-              <p className="text-sm text-gray-500">
-                {new Date(order.createdAt).toLocaleString()}
-              </p>
-            </div>
-          ))}
-        </div>
+        <>
+          {/* 💰 Earnings Banner */}
+          <div className="earnings-banner">
+            <h2 className="earnings-title">Total Earnings</h2>
+            <p className="earnings-amount">₹{earnings}</p>
+          </div>
+
+          {/* 📦 Orders Grid */}
+          <div className="products-grid">
+            {orders.map((order) => (
+              <div key={order._id} className="product-card order-card">
+                <h3 className="product-name">{order.product.name}</h3>
+
+                <p className="product-quantity">
+                  Quantity Sold: {order.quantity} Kg
+                </p>
+
+                <p className="product-price">
+                  Amount Earned: ₹{order.totalAmount}
+                </p>
+
+                <p className="text-sm text-gray-600">
+                  Buyer: {order.consumer.fullName}
+                </p>
+
+                <p className="text-sm text-gray-500">
+                  {new Date(order.createdAt).toLocaleString()}
+                </p>
+              </div>
+            ))}
+          </div>
+        </>
       )}
     </div>
   );

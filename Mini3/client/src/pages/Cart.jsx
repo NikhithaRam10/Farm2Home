@@ -1,12 +1,38 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import ConsumerNavbar from "../components/ConsumerNavbar";
 import "./Consumer.css";
 
 const Cart = () => {
   const [cart, setCart] = useState([]);
   const token = localStorage.getItem("token");
   const navigate = useNavigate();
+  const [searchTerm, setSearchTerm] = useState("");
+  const [favouritesCount, setFavouritesCount] = useState(0);
+  const [cartCount, setCartCount] = useState(0);
+
+  // Load counts
+  const loadCounts = async () => {
+    if (!token) return;
+    try {
+      const favRes = await axios.get("http://localhost:5000/api/users/favorites", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setFavouritesCount(favRes.data.length || 0);
+
+      const cartRes = await axios.get("http://localhost:5000/api/users/cart", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setCartCount(cartRes.data.length || 0);
+    } catch (err) {
+      console.error("Error loading counts:", err);
+    }
+  };
+
+  useEffect(() => {
+    loadCounts();
+  }, [token]);
 
   // Fetch Cart
   const loadCart = async () => {
@@ -91,65 +117,80 @@ Amount Paid: ₹${res.data.totalAmount}`
   // ✅ Filter out deleted products safely
   const validCartItems = cart.filter((item) => item.productId);
 
+  // ✅ Filter by search term
+  const filteredCart = validCartItems.filter((item) =>
+    item.productId.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   if (!validCartItems.length) {
     return (
-      <div className="consumer-container p-6">
-        <button onClick={() => navigate(-1)} className="back-btn mb-4">
-          ← Back
-        </button>
-        <h2 className="text-center mt-10">
-          Your cart is empty or products are no longer available.
-        </h2>
-      </div>
+      <>
+        <ConsumerNavbar
+          searchTerm={searchTerm}
+          onSearchChange={setSearchTerm}
+          favouritesCount={favouritesCount}
+          cartCount={cartCount}
+        />
+        <div className="consumer-container p-6">
+          <h2 className="text-center mt-10">
+            Your cart is empty or products are no longer available.
+          </h2>
+        </div>
+      </>
     );
   }
-
   return (
-    <div className="consumer-container p-6">
-      <button onClick={() => navigate(-1)} className="back-btn mb-4">
-        ← Back
-      </button>
+    <>
+      <ConsumerNavbar
+        searchTerm={searchTerm}
+        onSearchChange={setSearchTerm}
+        favouritesCount={favouritesCount}
+        cartCount={cartCount}
+      />
+      <div className="consumer-container">
+        <div className="products-grid">
+          {filteredCart.length > 0 ? (
+            filteredCart.map((item) => {
+            const product = item.productId;
 
-      <h1 className="text-2xl font-bold mb-4">Your Cart</h1>
+            return (
+              <div key={product._id} className="product-card">
+                <img
+                  src={
+                    product.images?.[0]
+                      ? `http://localhost:5000/uploads/${product.images[0]}`
+                      : "https://via.placeholder.com/200"
+                  }
+                  alt={product.name}
+                  className="product-image"
+                />
+                <h3 className="product-name">{product.name}</h3>
+                <p className="product-price">₹{product.pricePerKg}/Kg</p>
+                <p className="product-quantity">Qty: {item.quantity}</p>
 
-      <div className="products-grid">
-        {validCartItems.map((item) => {
-          const product = item.productId;
-
-          return (
-            <div key={product._id} className="product-card">
-              <img
-                src={
-                  product.images?.[0]
-                    ? `http://localhost:5000/uploads/${product.images[0]}`
-                    : "https://via.placeholder.com/200"
-                }
-                alt={product.name}
-                className="product-image"
-              />
-              <h3 className="product-name">{product.name}</h3>
-              <p className="product-price">₹{product.pricePerKg}/Kg</p>
-              <p className="product-quantity">Qty: {item.quantity}</p>
-
-              <div className="product-buttons">
-                <button
-                  className="buy-btn"
-                  onClick={() => handleBuy(product)}
-                >
-                  Buy
-                </button>
-                <button
-                  className="remove-btn"
-                  onClick={() => handleRemove(product._id)}
-                >
-                  Remove
-                </button>
+                <div className="product-buttons">
+                  <button
+                    className="buy-btn"
+                    onClick={() => handleBuy(product)}
+                  >
+                    Buy
+                  </button>
+                  <button
+                    className="remove-btn"
+                    onClick={() => handleRemove(product._id)}
+                  >
+                    Remove
+                  </button>
+                </div>
               </div>
-            </div>
-          );
-        })}
+            );
+          })
+          ) : (
+            <p className="no-results">No products found</p>
+          )}
+        </div>
       </div>
-    </div>
+    </>
   );
 };
 

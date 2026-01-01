@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import ConsumerNavbar from "../components/ConsumerNavbar";
 import "./Consumer.css";
 
 const Consumer = () => {
@@ -8,6 +9,7 @@ const Consumer = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [favouritesCount, setFavouritesCount] = useState(0);
   const [cartCount, setCartCount] = useState(0);
+  const [buyModal, setBuyModal] = useState({ isOpen: false, product: null, quantity: "" });
   const navigate = useNavigate();
 
   const token = localStorage.getItem("token");
@@ -94,95 +96,89 @@ const Consumer = () => {
   const filteredProducts = products.filter((product) =>
     product.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
-// Buy product (same logic as Cart)
-const handleBuy = async (product) => {
-  if (!token) {
-    alert("Please login to buy products");
-    return;
-  }
 
-  let quantity = prompt(
-    `Enter quantity to buy (in Kg)
-Available: ${product.quantity} Kg
-(Minimum 0.25 Kg)`
-  );
+  // Open buy modal
+  const openBuyModal = (product) => {
+    if (!token) {
+      alert("Please login to buy products");
+      return;
+    }
+    setBuyModal({ isOpen: true, product, quantity: "" });
+  };
 
-  if (!quantity) return;
+  // Close buy modal
+  const closeBuyModal = () => {
+    setBuyModal({ isOpen: false, product: null, quantity: "" });
+  };
 
-  quantity = parseFloat(quantity);
+  // Handle buy with modal input
+  const handleBuyConfirm = async () => {
+    const { product, quantity: quantityStr } = buyModal;
+    let quantity = parseFloat(quantityStr);
 
-  // Validation
-  if (isNaN(quantity)) {
-    alert("Please enter a valid number.");
-    return;
-  }
+    // Validation
+    if (!quantityStr.trim()) {
+      alert("Please enter a quantity");
+      return;
+    }
 
-  if (quantity < 0.25) {
-    alert("Minimum purchase quantity is 0.25 Kg");
-    return;
-  }
+    if (isNaN(quantity)) {
+      alert("Please enter a valid number.");
+      return;
+    }
 
-  if (quantity > product.quantity) {
-    alert(`Only ${product.quantity} Kg available`);
-    return;
-  }
+    if (quantity < 0.25) {
+      alert("Minimum purchase quantity is 0.25 Kg");
+      return;
+    }
 
-  try {
-    const res = await axios.post(
-      "http://localhost:5000/api/users/buy",
-      { productId: product._id, quantity },
-      { headers: { Authorization: `Bearer ${token}` } }
-    );
+    if (quantity > product.quantity) {
+      alert(`Only ${product.quantity} Kg available`);
+      return;
+    }
 
-    alert(
-      `✅ Purchase Successful!
+    try {
+      const res = await axios.post(
+        "http://localhost:5000/api/users/buy",
+        { productId: product._id, quantity },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      alert(
+        `✅ Purchase Successful!
 Product: ${product.name}
 Quantity: ${quantity} Kg
 Amount Paid: ₹${res.data.totalAmount}`
-    );
+      );
 
-    // Reload products to reflect updated stock
-    const updatedProducts = await axios.get("http://localhost:5000/api/products");
-    setProducts(updatedProducts.data);
+      // Reload products to reflect updated stock
+      const updatedProducts = await axios.get("http://localhost:5000/api/products");
+      setProducts(updatedProducts.data);
 
-    loadCounts(); // refresh cart/fav count
+      loadCounts(); // refresh cart/fav count
+      closeBuyModal(); // close modal
 
-  } catch (err) {
-    alert(err.response?.data?.message || "Purchase failed");
-    console.error(err);
-  }
+    } catch (err) {
+      alert(err.response?.data?.message || "Purchase failed");
+      console.error(err);
+    }
+  };
+
+// Buy product (same logic as Cart)
+const handleBuy = async (product) => {
+  openBuyModal(product);
 };
 
 
   return (
     <div>
-      {/* TOP NAVBAR */}
-      <div className="top-navbar">
-        <div className="nav-item" onClick={() => navigate("/favorites")}>
-          ❤️ Favourites
-        </div>
-        <div className="nav-item" onClick={() => navigate("/cart")}>
-          🛒 Cart 
-        </div>
-        <div className="nav-item" onClick={() => navigate("/profile")}>
-          👤 Profile
-        </div>
-        <div className="nav-item" onClick={() => navigate("/my-orders")}>
-  📦 Orders
-</div>
-
-
-        <input
-          type="text"
-          placeholder="Search for vegetables..."
-          className="search-bar"
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-        />
-         <div className="logout-btn" onClick={handleLogout}>
-          Logout
-        </div>
-      </div>
+      {/* Consumer Navbar with Search and Icons */}
+      <ConsumerNavbar 
+        searchTerm={searchTerm}
+        onSearchChange={setSearchTerm}
+        favouritesCount={favouritesCount}
+        cartCount={cartCount}
+      />
 
       {/* PRODUCTS GRID */}
       <div className="consumer-container">
@@ -213,11 +209,12 @@ Amount Paid: ₹${res.data.totalAmount}`
                       🛒 Add to Cart
                     </button>
                     <button
-                          className="buy-btn"
-                          disabled={product.quantity === 0}
-                          onClick={() => handleBuy(product)}>
-                          {product.quantity === 0 ? "Out of Stock" : "Buy"}
-                      </button>
+                      className="buy-btn"
+                      disabled={product.quantity === 0}
+                      onClick={() => handleBuy(product)}
+                    >
+                      {product.quantity === 0 ? "Out of Stock" : "Buy"}
+                    </button>
                   </div>
                 </div>
               );
@@ -227,6 +224,49 @@ Amount Paid: ₹${res.data.totalAmount}`
           )}
         </div>
       </div>
+
+      {/* Buy Modal */}
+      {buyModal.isOpen && buyModal.product && (
+        <div className="modal-overlay">
+          <div className="modal-card">
+            <h2>Purchase {buyModal.product.name}</h2>
+            <div className="modal-content">
+              <p className="modal-detail">
+                <strong>Price:</strong> ₹{buyModal.product.pricePerKg}/Kg
+              </p>
+              <p className="modal-detail">
+                <strong>Available:</strong> {buyModal.product.quantity} Kg
+              </p>
+              <p className="modal-detail modal-warning">
+                <strong>Minimum:</strong> 0.25 Kg
+              </p>
+              
+              <div className="modal-input-group">
+                <label htmlFor="quantity">Quantity (Kg):</label>
+                <input
+                  type="number"
+                  id="quantity"
+                  placeholder="Enter quantity"
+                  value={buyModal.quantity}
+                  onChange={(e) => setBuyModal({ ...buyModal, quantity: e.target.value })}
+                  step="0.25"
+                  min="0.25"
+                  max={buyModal.product.quantity}
+                />
+              </div>
+            </div>
+
+            <div className="modal-buttons">
+              <button className="modal-confirm" onClick={handleBuyConfirm}>
+                ✓ Confirm Purchase
+              </button>
+              <button className="modal-cancel" onClick={closeBuyModal}>
+                ✕ Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

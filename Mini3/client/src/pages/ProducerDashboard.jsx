@@ -1,5 +1,6 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
+import ProductNotifications from "../components/ProductNotifications";
 import "./ProducerDashboard.css";
 
 export default function ProducerDashboard() {
@@ -33,9 +34,12 @@ export default function ProducerDashboard() {
           💰 My Sales & Earnings
         </button>
 
-        <button onClick={() => navigate("/Profile")}>
-          👤 Profile
-        </button>
+        <div className="profile-button-with-notification">
+          <button onClick={() => navigate("/Profile")}>
+            👤 Profile
+          </button>
+          <ProductNotifications />
+        </div>
       </div>
     </div>
   );

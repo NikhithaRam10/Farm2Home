@@ -1,6 +1,7 @@
 .consumer-container {
   padding: 20px;
   background-color: transparent; /* Keep background image visible */
+  margin-top: 70px; /* Space for fixed navbar (navbar height ~60px) */
 }
 
 .title {
@@ -44,6 +45,10 @@
   box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.08);
   text-align: center;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 380px;
 }
 
 .product-card:hover {
@@ -53,27 +58,35 @@
 
 .product-image {
   width: 100%;
-  height: 150px;
+  height: 180px;
   object-fit: contain;
   margin-bottom: 10px;
+  flex-shrink: 0;
 }
 
 .product-name {
-  font-size: 1.1rem;
+  font-size: 1rem;
   font-weight: 600;
   margin: 5px 0;
+  line-height: 1.4;
+  min-height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .product-price {
   font-size: 1rem;
   color: #2e7d32;
   margin-bottom: 5px;
+  font-weight: 600;
 }
 
 .product-quantity {
   font-size: 0.9rem;
   color: #777;
   margin-bottom: 10px;
+  min-height: 20px;
 }
 
 /* Button Group */
@@ -81,12 +94,14 @@
   display: flex;
   justify-content: space-between;
   gap: 8px;
+  margin-top: auto;
 }
 
 /* Common button style */
 .fav-btn,
 .buy-btn,
-.add-cart-btn {
+.add-cart-btn,
+.remove-btn {
   flex: 1;
   padding: 10px;
   border: none;
@@ -191,43 +206,7 @@
 .left-navbar-item:last-child {
   border-bottom: none;
 }
-
-/* Adjust main container so it doesn't go under navbar */
-.consumer-container {
-  margin-left: 240px; /* space for navbar */
-}
-.top-navbar {
-  display: flex;
-  align-items: center;
-  background-color: #232f3e;
-  color: white;
-  padding: 10px;
-  gap: 15px;
-  flex-wrap: wrap; /* allows wrapping on small screens */
-}
-
-
-.logout-btn {
-  margin-left: auto; /* pushes to the right */
-  background-color: #ff9900; /* orange like before */
-  color: rgb(30, 19, 19); /* ensures text is visible */
-  border: none;
-  padding: 6px 12px;
-  border-radius: 4px;
-  cursor: pointer;
-  font-weight: 600;
-  transition: background-color 0.3s ease;
-}
-
-.logout-btn:hover {
-  background-color: #e68a00;
-}
-
-
-.nav-item {
-  cursor: pointer;
-}
-
+/* Buy Button */
 .buy-btn {
   background-color: #16a34a; /* green */
   color: white;
@@ -288,6 +267,11 @@
   justify-content: center;
   padding: 20px;
   min-height: 100vh;
+}
+
+/* Add top margin when navbar is present */
+.profile-wrapper.with-navbar {
+  margin-top: 70px;
 }
 
 /* ===== PROFILE CARD STYLING (RESPONSIVE) ===== */
@@ -464,6 +448,142 @@
   }
 }
 
+/* ===== BUY MODAL ===== */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+  animation: fadeIn 0.3s ease;
+}
+
+.modal-card {
+  background: #fff;
+  border-radius: 16px;
+  padding: 30px;
+  max-width: 400px;
+  width: 90%;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+  animation: slideUp 0.3s ease;
+}
+
+.modal-card h2 {
+  font-size: 1.5rem;
+  color: #1f2937;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.modal-content {
+  margin-bottom: 25px;
+}
+
+.modal-detail {
+  padding: 10px 0;
+  color: #555;
+  font-size: 0.95rem;
+  border-bottom: 1px solid #eee;
+}
+
+.modal-detail:last-child {
+  border-bottom: none;
+}
+
+.modal-warning {
+  color: #d97706;
+  font-weight: 600;
+}
+
+.modal-input-group {
+  margin: 20px 0;
+}
+
+.modal-input-group label {
+  display: block;
+  margin-bottom: 8px;
+  color: #333;
+  font-weight: 600;
+}
+
+.modal-input-group input {
+  width: 100%;
+  padding: 12px;
+  border: 2px solid #4CAF50;
+  border-radius: 8px;
+  font-size: 1rem;
+  outline: none;
+  transition: all 0.3s ease;
+}
+
+.modal-input-group input:focus {
+  border-color: #2e7d32;
+  box-shadow: 0 0 8px rgba(46, 125, 50, 0.3);
+}
+
+.modal-buttons {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+}
+
+.modal-confirm,
+.modal-cancel {
+  flex: 1;
+  padding: 12px 20px;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 0.95rem;
+}
+
+.modal-confirm {
+  background-color: #2e7d32;
+  color: white;
+}
+
+.modal-confirm:hover {
+  background-color: #1b5e20;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(46, 125, 50, 0.3);
+}
+
+.modal-cancel {
+  background-color: #e5e7eb;
+  color: #333;
+}
+
+.modal-cancel:hover {
+  background-color: #d1d5db;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
 /* Fade animation */
 @keyframes fadeIn {
   from {
@@ -474,4 +594,42 @@
     opacity: 1;
     transform: translateY(0);
   }
+}
+/* ===== Producer Earnings Banner ===== */
+.earnings-banner {
+  background: rgba(255, 255, 255, 0.88);
+  max-width: 420px;
+  margin: 30px auto 50px;
+  padding: 26px 20px;
+  border-radius: 18px;
+  text-align: center;
+  box-shadow: 0 14px 30px rgba(0, 0, 0, 0.18);
+  backdrop-filter: blur(6px);
+}
+
+.earnings-title {
+  font-size: 1.6rem;
+  font-weight: 800;
+  color: #14532d;
+  margin-bottom: 10px;
+  letter-spacing: 0.6px;
+}
+
+.earnings-amount {
+  font-size: 2.2rem;
+  font-weight: 900;
+  color: #16a34a;
+}
+/* ===== Producer Orders Card Fix ===== */
+.order-card {
+  padding: 20px;
+  min-height: unset;
+  height: auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+}
+
+.order-card p {
+  margin: 6px 0;
 }

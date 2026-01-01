@@ -74,7 +74,7 @@ export default function AddProduct() {
           position: fixed;
           top: 16px;
           left: 16px;
-          background: #f97316;
+          background: #14532d;
           color: white;
           border: none;
           padding: 8px 12px;
@@ -84,7 +84,7 @@ export default function AddProduct() {
           box-shadow: 0 2px 6px rgba(0,0,0,0.15);
         }
         .back-btn:hover {
-          background: #ea580c;
+          background: #4ca30fff;
         }
         form {
           background-color: white;
