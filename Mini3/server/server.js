@@ -7,6 +7,7 @@ const path = require("path");
 const authRoutes = require("./routes/authRoutes");
 const userRoutes = require("./routes/userRoutes");
 const productRoutes = require("./routes/productRoutes");
+const recipeRoutes = require("./routes/recipeRoutes");
 
 const app = express();
 app.use(cors());
@@ -20,6 +21,7 @@ app.use("/api/users", require("./routes/userRoutes"));
 
 
 app.use("/api/products", productRoutes);
+app.use("/api/recipes", recipeRoutes);
 
 mongoose.connect(process.env.MONGO_URI)
   .then(() => {

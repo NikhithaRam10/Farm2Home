@@ -66,6 +66,11 @@ const ConsumerNavbar = ({ searchTerm, onSearchChange, favouritesCount, cartCount
           <span className="nav-label">Orders</span>
         </div>
 
+        <div className="nav-item" onClick={() => navigate("/recipe-finder")} title="Find Recipes & Ingredients">
+          <span className="nav-icon">🍳</span>
+          <span className="nav-label">Recipes</span>
+        </div>
+
         <div className="nav-item" onClick={() => navigate("/profile")} title="View Profile">
           <span className="nav-icon">👤</span>
           <span className="nav-label">Profile</span>

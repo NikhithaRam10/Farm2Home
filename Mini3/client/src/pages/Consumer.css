@@ -245,12 +245,12 @@
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 8px rgba(29, 141, 76, 0.1);
 }
 
 .back-btn:hover {
-  background-color: #166534;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  background-color: #0bd257;
+  box-shadow: 0 4px 12px rgba(6, 160, 22, 0.2);
   transform: translateY(-2px);
 }
 

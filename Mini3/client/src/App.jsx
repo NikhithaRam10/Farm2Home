@@ -15,6 +15,7 @@ import ProducerDashboard from "./pages/ProducerDashboard";
 import Favorites from "./pages/Favorites";
 import Cart from "./pages/Cart";
 import ProducerOrders from "./pages/ProducerOrders";
+import RecipeFinder from "./pages/RecipeFinder";
 
 // ✅ MISSING IMPORT (THIS WAS THE PROBLEM)
 import ConsumerOrders from "./pages/ConsumerOrders";
@@ -49,6 +50,7 @@ function App() {
               <Route path="/favorites" element={<Favorites />} />
               <Route path="/cart" element={<Cart />} />
               <Route path="/my-orders" element={<ConsumerOrders />} />
+              <Route path="/recipe-finder" element={<RecipeFinder />} />
 
               <Route path="/ProducerDashboard" element={<ProducerDashboard />} />
               <Route path="/add-product" element={<AddProduct />} />

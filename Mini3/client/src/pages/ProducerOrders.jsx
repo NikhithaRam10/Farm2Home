@@ -55,22 +55,22 @@ const ProducerOrders = () => {
           <div className="products-grid">
             {orders.map((order) => (
               <div key={order._id} className="product-card order-card">
-                <h3 className="product-name">{order.product.name}</h3>
+                <h3 className="product-name">{order.product?.name || "(product removed)"}</h3>
 
                 <p className="product-quantity">
-                  Quantity Sold: {order.quantity} Kg
+                  Quantity Sold: {order.quantity ?? "-"} Kg
                 </p>
 
                 <p className="product-price">
-                  Amount Earned: ₹{order.totalAmount}
+                  Amount Earned: ₹{order.totalAmount ?? "-"}
                 </p>
 
                 <p className="text-sm text-gray-600">
-                  Buyer: {order.consumer.fullName}
+                  Buyer: {order.consumer?.fullName || "(unknown)"}
                 </p>
 
                 <p className="text-sm text-gray-500">
-                  {new Date(order.createdAt).toLocaleString()}
+                  {new Date(order.createdAt || Date.now()).toLocaleString()}
                 </p>
               </div>
             ))}
