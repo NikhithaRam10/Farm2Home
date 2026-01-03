@@ -6,8 +6,15 @@ import "./Consumer.css";
 
 const Cart = () => {
   const [cart, setCart] = useState([]);
+  const [buyModal, setBuyModal] = useState({
+    isOpen: false,
+    product: null,
+    quantity: "",
+  });
+
   const token = localStorage.getItem("token");
   const navigate = useNavigate();
+
   const [searchTerm, setSearchTerm] = useState("");
   const [favouritesCount, setFavouritesCount] = useState(0);
   const [cartCount, setCartCount] = useState(0);
@@ -26,15 +33,11 @@ const Cart = () => {
       });
       setCartCount(cartRes.data.length || 0);
     } catch (err) {
-      console.error("Error loading counts:", err);
+      console.error(err);
     }
   };
 
-  useEffect(() => {
-    loadCounts();
-  }, [token]);
-
-  // Fetch Cart
+  // Load cart
   const loadCart = async () => {
     if (!token) return;
     try {
@@ -43,37 +46,40 @@ const Cart = () => {
       });
       setCart(res.data || []);
     } catch (err) {
-      console.error("Error loading cart:", err.response?.data || err.message);
+      console.error(err);
     }
   };
 
   useEffect(() => {
+    loadCounts();
     loadCart();
   }, [token]);
 
-  // Buy product
-  const handleBuy = async (product) => {
-    let quantity = prompt(
-      `Enter quantity to buy (in Kg)
-Available: ${product.quantity} Kg
-(Minimum 0.25 Kg)`
-    );
+  // Open modal
+  const openBuyModal = (product) => {
+    setBuyModal({ isOpen: true, product, quantity: "" });
+  };
 
-    if (!quantity) return;
+  const closeBuyModal = () => {
+    setBuyModal({ isOpen: false, product: null, quantity: "" });
+  };
 
-    quantity = parseFloat(quantity);
+  // Confirm buy
+  const handleBuyConfirm = async () => {
+    const { product, quantity } = buyModal;
+    const qty = parseFloat(quantity);
 
-    if (isNaN(quantity)) {
-      alert("Please enter a valid number.");
+    if (!quantity || isNaN(qty)) {
+      alert("Please enter a valid quantity");
       return;
     }
 
-    if (quantity < 0.25) {
+    if (qty < 0.25) {
       alert("Minimum purchase quantity is 0.25 Kg");
       return;
     }
 
-    if (quantity > product.quantity) {
+    if (qty > product.quantity) {
       alert(`Only ${product.quantity} Kg available`);
       return;
     }
@@ -81,64 +87,37 @@ Available: ${product.quantity} Kg
     try {
       const res = await axios.post(
         "http://localhost:5000/api/users/buy",
-        { productId: product._id, quantity },
+        { productId: product._id, quantity: qty },
         { headers: { Authorization: `Bearer ${token}` } }
       );
 
       alert(
         `✅ Purchase Successful!
 Product: ${product.name}
-Quantity: ${quantity} Kg
+Quantity: ${qty} Kg
 Amount Paid: ₹${res.data.totalAmount}`
       );
 
-      loadCart(); // refresh cart
+      closeBuyModal();
+      loadCart();
+      loadCounts();
     } catch (err) {
       alert(err.response?.data?.message || "Purchase failed");
-      console.error(err);
     }
   };
 
-  // Remove from cart
   const handleRemove = async (productId) => {
-    try {
-      await axios.post(
-        "http://localhost:5000/api/users/cart/remove",
-        { productId },
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-      loadCart();
-    } catch (err) {
-      console.error("Remove error:", err.response?.data || err.message);
-      alert(err.response?.data?.message || "Error removing item");
-    }
+    await axios.post(
+      "http://localhost:5000/api/users/cart/remove",
+      { productId },
+      { headers: { Authorization: `Bearer ${token}` } }
+    );
+    loadCart();
+    loadCounts();
   };
 
-  // ✅ Filter out deleted products safely
   const validCartItems = cart.filter((item) => item.productId);
 
-  // ✅ Filter by search term
-  const filteredCart = validCartItems.filter((item) =>
-    item.productId.name.toLowerCase().includes(searchTerm.toLowerCase())
-  );
-
-  if (!validCartItems.length) {
-    return (
-      <>
-        <ConsumerNavbar
-          searchTerm={searchTerm}
-          onSearchChange={setSearchTerm}
-          favouritesCount={favouritesCount}
-          cartCount={cartCount}
-        />
-        <div className="consumer-container p-6">
-          <h2 className="text-center mt-10">
-            Your cart is empty or products are no longer available.
-          </h2>
-        </div>
-      </>
-    );
-  }
   return (
     <>
       <ConsumerNavbar
@@ -147,12 +126,11 @@ Amount Paid: ₹${res.data.totalAmount}`
         favouritesCount={favouritesCount}
         cartCount={cartCount}
       />
+
       <div className="consumer-container">
         <div className="products-grid">
-          {filteredCart.length > 0 ? (
-            filteredCart.map((item) => {
+          {validCartItems.map((item) => {
             const product = item.productId;
-
             return (
               <div key={product._id} className="product-card">
                 <img
@@ -161,8 +139,8 @@ Amount Paid: ₹${res.data.totalAmount}`
                       ? `http://localhost:5000/uploads/${product.images[0]}`
                       : "https://via.placeholder.com/200"
                   }
-                  alt={product.name}
                   className="product-image"
+                  alt={product.name}
                 />
                 <h3 className="product-name">{product.name}</h3>
                 <p className="product-price">₹{product.pricePerKg}/Kg</p>
@@ -171,7 +149,7 @@ Amount Paid: ₹${res.data.totalAmount}`
                 <div className="product-buttons">
                   <button
                     className="buy-btn"
-                    onClick={() => handleBuy(product)}
+                    onClick={() => openBuyModal(product)}
                   >
                     Buy
                   </button>
@@ -184,12 +162,42 @@ Amount Paid: ₹${res.data.totalAmount}`
                 </div>
               </div>
             );
-          })
-          ) : (
-            <p className="no-results">No products found</p>
-          )}
+          })}
         </div>
       </div>
+
+      {/* 🔥 Buy Modal (SAME AS CONSUMER PAGE) */}
+      {buyModal.isOpen && buyModal.product && (
+        <div className="modal-overlay">
+          <div className="modal-card">
+            <h2>Purchase {buyModal.product.name}</h2>
+
+            <p><b>Price:</b> ₹{buyModal.product.pricePerKg}/Kg</p>
+            <p><b>Available:</b> {buyModal.product.quantity} Kg</p>
+
+            <input
+              type="number"
+              step="0.25"
+              min="0.25"
+              max={buyModal.product.quantity}
+              placeholder="Enter quantity"
+              value={buyModal.quantity}
+              onChange={(e) =>
+                setBuyModal({ ...buyModal, quantity: e.target.value })
+              }
+            />
+
+            <div className="modal-buttons">
+              <button className="modal-confirm" onClick={handleBuyConfirm}>
+                Confirm
+              </button>
+              <button className="modal-cancel" onClick={closeBuyModal}>
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 };
