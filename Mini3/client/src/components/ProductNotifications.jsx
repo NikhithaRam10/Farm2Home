@@ -13,7 +13,7 @@ const ProductNotifications = () => {
 
       try {
         const res = await axios.get(
-          "http://localhost:5000/api/products/my-products",
+          "https://farmtohome-pt2e.onrender.com/api/products/my-products",
           {
             headers: { Authorization: `Bearer ${token}` },
           }

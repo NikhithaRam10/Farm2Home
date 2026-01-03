@@ -27,7 +27,7 @@ const RecipeFinder = () => {
     setLoading(true);
     try {
       const response = await axios.get(
-        "http://localhost:5000/api/recipes/search",
+        "https://farmtohome-pt2e.onrender.com/api/recipes/search",
         {
           params: { query: searchQuery, number: 8 },
         }
@@ -49,7 +49,7 @@ const RecipeFinder = () => {
     setLoading(true);
     try {
       const response = await axios.get(
-        `http://localhost:5000/api/recipes/${recipe.id}`
+        `https://farmtohome-pt2e.onrender.com/api/recipes/${recipe.id}`
       );
 
       setSelectedRecipe(response.data);
@@ -58,7 +58,7 @@ const RecipeFinder = () => {
 
       // Match ingredients with products (send recipeServings + desired servings)
       const matchResponse = await axios.post(
-        "http://localhost:5000/api/recipes/match-ingredients",
+        "https://farmtohome-pt2e.onrender.com/api/recipes/match-ingredients",
         {
           ingredients: response.data.extendedIngredients.map((ing) => ({
             name: ing.name,
@@ -123,7 +123,7 @@ const RecipeFinder = () => {
         if (product) {
           // Add to cart with quantity (use correct endpoint)
           await axios.post(
-            "http://localhost:5000/api/users/cart/add",
+            "https://farmtohome-pt2e.onrender.com/api/users/cart/add",
             {
               productId: product._id,
               quantity: Math.ceil(ingredient.calculatedAmount), // Round up to nearest whole number

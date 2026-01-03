@@ -16,12 +16,12 @@ const Profile = () => {
   const loadCounts = async () => {
     if (!token) return;
     try {
-      const favRes = await axios.get("http://localhost:5000/api/users/favorites", {
+      const favRes = await axios.get("https://farmtohome-pt2e.onrender.com/api/users/favorites", {
         headers: { Authorization: `Bearer ${token}` },
       });
       setFavouritesCount(favRes.data.length || 0);
 
-      const cartRes = await axios.get("http://localhost:5000/api/users/cart", {
+      const cartRes = await axios.get("https://farmtohome-pt2e.onrender.com/api/users/cart", {
         headers: { Authorization: `Bearer ${token}` },
       });
       setCartCount(cartRes.data.length || 0);
@@ -34,7 +34,7 @@ const Profile = () => {
     const fetchProfile = async () => {
       try {
         const res = await axios.get(
-          "http://localhost:5000/api/users/profile",
+          "https://farmtohome-pt2e.onrender.com/api/users/profile",
           {
             headers: { Authorization: `Bearer ${token}` },
           }

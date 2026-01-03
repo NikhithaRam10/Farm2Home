@@ -50,7 +50,7 @@ const Register = () => {
     }
 
     try {
-      const response = await axios.post("http://localhost:5000/api/auth/register", {
+      const response = await axios.post("https://farmtohome-pt2e.onrender.com/api/auth/register", {
         fullName: fullName,
         email,
         password,

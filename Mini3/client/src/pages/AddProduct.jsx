@@ -42,7 +42,7 @@ export default function AddProduct() {
 
     try {
       await axios.post(
-        "http://localhost:5000/api/products/add-product",
+        "https://farmtohome-pt2e.onrender.com/api/products/add-product",
         formData,
         {
           headers: {

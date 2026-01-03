@@ -17,7 +17,7 @@ const Consumer = () => {
   // Load products
   useEffect(() => {
     axios
-      .get("http://localhost:5000/api/products")
+      .get("https://farmtohome-pt2e.onrender.com/api/products")
       .then((res) => setProducts(res.data))
       .catch((err) => console.error(err));
   }, []);
@@ -27,12 +27,12 @@ const Consumer = () => {
     if (!token) return;
 
     try {
-      const favRes = await axios.get("http://localhost:5000/api/users/favorites", {
+      const favRes = await axios.get("https://farmtohome-pt2e.onrender.com/api/users/favorites", {
         headers: { Authorization: `Bearer ${token}` },
       });
       setFavouritesCount(favRes.data.length || 0);
 
-      const cartRes = await axios.get("http://localhost:5000/api/users/cart", {
+      const cartRes = await axios.get("https://farmtohome-pt2e.onrender.com/api/users/cart", {
         headers: { Authorization: `Bearer ${token}` },
       });
       setCartCount(cartRes.data.length || 0);
@@ -54,7 +54,7 @@ const Consumer = () => {
 
     try {
       await axios.post(
-        "http://localhost:5000/api/users/favorites/add",
+        "https://farmtohome-pt2e.onrender.com/api/users/favorites/add",
         { productId },
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -75,7 +75,7 @@ const Consumer = () => {
 
     try {
       await axios.post(
-        "http://localhost:5000/api/users/cart/add",
+        "https://farmtohome-pt2e.onrender.com/api/users/cart/add",
         { productId, quantity: 1 },
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -139,7 +139,7 @@ const Consumer = () => {
 
     try {
       const res = await axios.post(
-        "http://localhost:5000/api/users/buy",
+        "https://farmtohome-pt2e.onrender.com/api/users/buy",
         { productId: product._id, quantity },
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -152,7 +152,7 @@ Amount Paid: ₹${res.data.totalAmount}`
       );
 
       // Reload products to reflect updated stock
-      const updatedProducts = await axios.get("http://localhost:5000/api/products");
+      const updatedProducts = await axios.get("https://farmtohome-pt2e.onrender.com/api/products");
       setProducts(updatedProducts.data);
 
       loadCounts(); // refresh cart/fav count
@@ -186,7 +186,7 @@ const handleBuy = async (product) => {
           {filteredProducts.length > 0 ? (
             filteredProducts.map((product) => {
               const imageUrl = product.images?.[0]
-                ? `http://localhost:5000/uploads/${product.images[0]}`
+                ? `https://farmtohome-pt2e.onrender.com/uploads/${product.images[0]}`
                 : "https://via.placeholder.com/200";
 
               return (

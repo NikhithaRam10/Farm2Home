@@ -16,12 +16,12 @@ const Favorites = () => {
   const loadCounts = async () => {
     if (!token) return;
     try {
-      const favRes = await axios.get("http://localhost:5000/api/users/favorites", {
+      const favRes = await axios.get("https://farmtohome-pt2e.onrender.com/api/users/favorites", {
         headers: { Authorization: `Bearer ${token}` },
       });
       setFavouritesCount(favRes.data.length || 0);
 
-      const cartRes = await axios.get("http://localhost:5000/api/users/cart", {
+      const cartRes = await axios.get("https://farmtohome-pt2e.onrender.com/api/users/cart", {
         headers: { Authorization: `Bearer ${token}` },
       });
       setCartCount(cartRes.data.length || 0);
@@ -37,7 +37,7 @@ const Favorites = () => {
   const loadFavorites = async () => {
     if (!token) return;
     try {
-      const res = await axios.get("http://localhost:5000/api/users/favorites", {
+      const res = await axios.get("https://farmtohome-pt2e.onrender.com/api/users/favorites", {
         headers: { Authorization: `Bearer ${token}` },
       });
       setFavorites(res.data || []);
@@ -55,7 +55,7 @@ const Favorites = () => {
     if (!token) return alert("Not logged in!");
     try {
       await axios.post(
-        "http://localhost:5000/api/users/cart/add",
+        "https://farmtohome-pt2e.onrender.com/api/users/cart/add",
         { productId, quantity: 1 },
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -71,7 +71,7 @@ const Favorites = () => {
     if (!token) return alert("Not logged in!");
     try {
       await axios.post(
-        "http://localhost:5000/api/users/favorites/remove",
+        "https://farmtohome-pt2e.onrender.com/api/users/favorites/remove",
         { productId },
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -115,7 +115,7 @@ const Favorites = () => {
           {filteredFavorites.length > 0 ? (
             filteredFavorites.map((product) => {
             const imageUrl = product.images?.[0]
-              ? `http://localhost:5000/uploads/${product.images[0]}`
+              ? `https://farmtohome-pt2e.onrender.com/uploads/${product.images[0]}`
               : "https://via.placeholder.com/200";
 
             return (

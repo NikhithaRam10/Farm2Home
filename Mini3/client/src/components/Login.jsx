@@ -21,7 +21,7 @@ const Login = () => {
     setError("");
 
     try {
-      const res = await axios.post("http://localhost:5000/api/auth/login", formData);
+      const res = await axios.post("https://farmtohome-pt2e.onrender.com/api/auth/login", formData);
 
       // ✅ Save token + userId after successful login
       if (res.data.token) localStorage.setItem("token", res.data.token);

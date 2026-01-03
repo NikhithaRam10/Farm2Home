@@ -35,7 +35,7 @@ const [formData, setFormData] = useState({
   form.append('image', formData.image); // file
 
   try {
-    const res = await axios.post('http://localhost:5000/api/products', form);
+    const res = await axios.post('https://farmtohome-pt2e.onrender.com/api/products', form);
     console.log('Product added:', res.data);
     setError(""); // clear error
     navigate("/dashboard");

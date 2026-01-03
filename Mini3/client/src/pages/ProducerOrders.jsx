@@ -13,7 +13,7 @@ const ProducerOrders = () => {
     const fetchOrders = async () => {
       try {
         const res = await axios.get(
-          "http://localhost:5000/api/users/producer-orders",
+          "https://farmtohome-pt2e.onrender.com/api/users/producer-orders",
           {
             headers: { Authorization: `Bearer ${token}` },
           }

@@ -17,7 +17,7 @@ const MyProducts = () => {
 
       try {
         const res = await axios.get(
-          "http://localhost:5000/api/products/my-products",
+          "https://farmtohome-pt2e.onrender.com/api/products/my-products",
           {
             headers: { Authorization: `Bearer ${token}` },
           }
@@ -49,7 +49,7 @@ const MyProducts = () => {
 
     try {
       const res = await axios.put(
-        `http://localhost:5000/api/products/${productId}`,
+        `https://farmtohome-pt2e.onrender.com/api/products/${productId}`,
         { quantity: parseFloat(editQuantity) },
         {
           headers: { Authorization: `Bearer ${token}` },
@@ -72,7 +72,7 @@ const MyProducts = () => {
 
     try {
       await axios.delete(
-        `http://localhost:5000/api/products/${productId}`,
+        `https://farmtohome-pt2e.onrender.com/api/products/${productId}`,
         {
           headers: { Authorization: `Bearer ${token}` },
         }
@@ -108,7 +108,7 @@ const MyProducts = () => {
         <div className="products-grid">
           {products.map((product) => {
             const imageUrl = product.images?.[0]
-              ? `http://localhost:5000/uploads/${product.images[0]}`
+              ? `https://farmtohome-pt2e.onrender.com/uploads/${product.images[0]}`
               : "https://via.placeholder.com/200";
 
             return (

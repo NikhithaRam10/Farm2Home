@@ -23,12 +23,12 @@ const Cart = () => {
   const loadCounts = async () => {
     if (!token) return;
     try {
-      const favRes = await axios.get("http://localhost:5000/api/users/favorites", {
+      const favRes = await axios.get("https://farmtohome-pt2e.onrender.com/api/users/favorites", {
         headers: { Authorization: `Bearer ${token}` },
       });
       setFavouritesCount(favRes.data.length || 0);
 
-      const cartRes = await axios.get("http://localhost:5000/api/users/cart", {
+      const cartRes = await axios.get("https://farmtohome-pt2e.onrender.com/api/users/cart", {
         headers: { Authorization: `Bearer ${token}` },
       });
       setCartCount(cartRes.data.length || 0);
@@ -41,7 +41,7 @@ const Cart = () => {
   const loadCart = async () => {
     if (!token) return;
     try {
-      const res = await axios.get("http://localhost:5000/api/users/cart", {
+      const res = await axios.get("https://farmtohome-pt2e.onrender.com/api/users/cart", {
         headers: { Authorization: `Bearer ${token}` },
       });
       setCart(res.data || []);
@@ -86,7 +86,7 @@ const Cart = () => {
 
     try {
       const res = await axios.post(
-        "http://localhost:5000/api/users/buy",
+        "https://farmtohome-pt2e.onrender.com/api/users/buy",
         { productId: product._id, quantity: qty },
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -108,7 +108,7 @@ Amount Paid: ₹${res.data.totalAmount}`
 
   const handleRemove = async (productId) => {
     await axios.post(
-      "http://localhost:5000/api/users/cart/remove",
+      "https://farmtohome-pt2e.onrender.com/api/users/cart/remove",
       { productId },
       { headers: { Authorization: `Bearer ${token}` } }
     );
@@ -136,7 +136,7 @@ Amount Paid: ₹${res.data.totalAmount}`
                 <img
                   src={
                     product.images?.[0]
-                      ? `http://localhost:5000/uploads/${product.images[0]}`
+                      ? `https://farmtohome-pt2e.onrender.com/uploads/${product.images[0]}`
                       : "https://via.placeholder.com/200"
                   }
                   className="product-image"

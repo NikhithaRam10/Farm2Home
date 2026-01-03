@@ -9,7 +9,7 @@ const ConsumerProfile = () => {
       try {
         const token = localStorage.getItem("token"); // assuming you save JWT
         const { data } = await axios.get(
-  "http://localhost:5000/api/users/profile",
+  "https://farmtohome-pt2e.onrender.com/api/users/profile",
   {
     headers: { Authorization: `Bearer ${token}` },
   }

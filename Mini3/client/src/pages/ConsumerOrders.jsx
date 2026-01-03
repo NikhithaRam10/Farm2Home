@@ -16,12 +16,12 @@ const ConsumerOrders = () => {
   const loadCounts = async () => {
     if (!token) return;
     try {
-      const favRes = await axios.get("http://localhost:5000/api/users/favorites", {
+      const favRes = await axios.get("https://farmtohome-pt2e.onrender.com/api/users/favorites", {
         headers: { Authorization: `Bearer ${token}` },
       });
       setFavouritesCount(favRes.data.length || 0);
 
-      const cartRes = await axios.get("http://localhost:5000/api/users/cart", {
+      const cartRes = await axios.get("https://farmtohome-pt2e.onrender.com/api/users/cart", {
         headers: { Authorization: `Bearer ${token}` },
       });
       setCartCount(cartRes.data.length || 0);
@@ -34,7 +34,7 @@ const ConsumerOrders = () => {
     const fetchOrders = async () => {
       try {
         const res = await axios.get(
-          "http://localhost:5000/api/users/orders",
+          "https://farmtohome-pt2e.onrender.com/api/users/orders",
           {
             headers: { Authorization: `Bearer ${token}` },
           }
@@ -73,7 +73,7 @@ const ConsumerOrders = () => {
         <div className="products-grid">
           {filteredOrders.map((order) => {
             const imageUrl = order.product?.images?.[0]
-              ? `http://localhost:5000/uploads/${order.product.images[0]}`
+              ? `https://farmtohome-pt2e.onrender.com/uploads/${order.product.images[0]}`
               : "https://via.placeholder.com/200";
 
             return (
